@@ -1,0 +1,383 @@
+% \iffalse
+\begingroup
+  \def\tmp{plain}
+  \expandafter
+\endgroup
+\csname if\ifx\tmp\fmtname false\else true\fi\endcsname
+  \documentclass{article}
+  \usepackage{shortvrb}
+  \MakeShortVerb|
+  \catcode`\%=9
+  \input \jobname.tex
+\fi
+% \fi
+%
+% \title{\texttt{reverxii.tex}\\
+%   Playing Reversi in \TeX{}}
+% \author{Bruno Le Floch}
+% \date{December 28, 2011}
+% \newcommand{\cs}[1]{\texttt{\char`\\ #1}}
+% \newcommand{\meta}[1]{$\langle \mathit{#1}\rangle$}
+% \newcommand{\enquote}[1]{``#1''}
+% \makeatletter
+% \def\verbatim{\@verbatim\frenchspacing\@vobeyspaces\catcode`\%=9 \@xverbatim}
+% \makeatother
+% \begin{document}
+% \maketitle
+%
+% \begin{abstract}
+%   \texttt{reverxii.tex} is a $938$-byte long \TeX{} program
+%   which lets you play Reversi against your favorite typestting engine.
+%   To play, run plain \TeX{}, on the command line, in dvi-mode,
+%   on the file \texttt{reverxii.tex}. In most distributions,
+%   this should mean running \texttt{tex reverxii.tex} in a terminal.
+%   To produce the documentation, run \LaTeX{} on the same file,
+%   with any engine (\emph{e.g.}, \texttt{pdflatex reverxii.tex}).
+% \end{abstract}
+%
+% \section{The code}
+%
+% Line breaks can be removed, and the stripped down code takes $938$
+% characters.
+% \begin{verbatim}
+\vsize5cm\hsize3cm\newlinechar`*\def~#1{\catcode`#113~}
+~IJKLMNOPQRSTUVWXYZjqz@.[|](/+^'";:?,_)!*{ 13\def~#1#2{\let#1#2~}
+\def+{\count1}+1=2}*\cr[\ifnum(\ifcase|\or/\else]\fiN\number@\advance
+X\expandafter!\global?\message~\def.#1{@+1 1\countdef#1+1.}
+.IJKLPQRSTUVWYZ.-1P1T2+44P+55P+45T+54T
+~j{[0<Q[9>Q[0<J[9>J^/.]/.]/.]/.]}
+~^{+NQNJ}~:#1{#11#12#13#14#15#16#17#18}~M#1{?{#1}#1}
+~_#1#2{M#2:{\B#1}&M#2&M{*}}~\B#1#2{&M{(+#1#2  |-|0]}}
+~q{?{Row and column? e.g. E6*}\read.to\EX\D\meaning\E  ;}
+~\D#1->#2#3#4;{Q`#2@Q-`@J`#3@J-`0)(V?{Invalid move #2#3.}q]}
+~){V0 (jS1z1z0z.S0z1z.S.z1z0z.]}~;{@R(P|-]}~z#1{{K#1Z1{Y1,}(Z,]}}
+~,{@QS@JK[j=T(Y!^P!;2]O,/[j=P!VV(I(Y/!Z0]]]]}~\A#1{Q#1:\C}
+~\C#1{J#1)[0<VO[V>WWVUQLJ]]}~"#1{(#1|0|1|2|2|2|2|1|0]}
+~O{Z"Q\multiplyZ3@Z"J@V(Z9|1|6|1|1|2|6|2|4] }~'{M :{&M}&M{*}}
+~~{PXTXTNP\halign{&## *M{*}'_1A_2B_3C_4D_5E_6F_7G_8H'}\vfil\break
+I1W(W./0] :\AI0 [0<W[1=PQUJL/q])^P;1][.=W?{(RTie/ Player [0>R-/0]
+wins by N[0>R-]R].}X\end]~}~
+% \end{verbatim}
+%
+% To play a two-player game, change |1=P| to |0=P| near the end:
+% this changes the computer player from $0$ to $1$, hence disabling it.
+%
+% \section{Explanation}
+%
+% \subsection{Some comments}
+%
+% The name \texttt{reverxii.tex} is of course a reference to the infamous
+% \texttt{xii.tex}, also on CTAN, which typesets the lyrics of the
+% \textit{Twelve days of Christmas} using code that very few can understand.
+% In my case, I aimed for the shortest possible code, rather than the
+% most obfuscated. In particular, I did not assign weird catcodes
+% other than making most characters active.
+%
+% Since I was aiming for short code, the text presented to the player
+% is concise, but hopefully enough to leave the game understandable
+% and usable. Despite aiming for short code, I thought it would be
+% neat to typeset a record of the game as it goes: after all, \TeX{}
+% is a typesetting program. This used up around $38$ characters, putting
+% me above the $900$ character line.
+%
+% One technique used to make the code shorter is to rename any primitive
+% used more than once into a single active character. Also, counters
+% holding the information about the board are accessed directly by number.
+%
+% A careful reader would notice that changing one of the remaining
+% one-character control sequences to active characters (|$| is still
+% unused) would gain one character. I didn't do it, because it messes
+% up the code-highlighting of my editor |:)|. Of course, I chose the
+% control sequences which are not active characters to be those appearing
+% the least, only twice each.
+%
+% \subsubsection{On with the code!}
+%
+% First set up the page dimensions. This would not be enough for pdf output.
+% \begin{verbatim}
+% \vsize5cm
+% \hsize3cm
+% \end{verbatim}
+%
+% Since plain \TeX{} does not provide the \cs{typeout} command, we are
+% using \cs{message}, hence need to setup a new line character. It is
+% arbitrarily chosen to be |*|, which will be made active and \cs{let}
+% to \cs{cr}.
+% \begin{verbatim}
+% \newlinechar`*
+% \end{verbatim}
+%
+% Then a first loop to make many characters active. The loop ends when
+% reaching the trailing brace group: there we make spaces active, then
+% redefine |~| for the next loop. We still have an annoying |13~| in
+% the input stream. Introduce a short-hand for count registers whose
+% number starts with |1|, then remove |13| by setting |\count11| to
+% |213| (this counter is used for allocation later on). The next loop
+% is triggered by the |~| which we left.
+% \begin{verbatim}
+% \def~#1{\catcode`#113~}
+% ~IJKLMNOPQRSTUVWXYZjqz@.[|](/+^'";:?,_)!*
+% { 13\def~#1#2{\let#1#2~}\def+{\count1}+1=2}
+% \end{verbatim}
+%
+% At this stage, |~| is defined to take two arguments, \cs{let} the
+% first to the second, and repeat. As announced |*| becomes \cs{cr},
+% so that it will be a new line both in messages and in alignments.
+% We try to keep a relatively consistent naming scheme: opening
+% conditionals are left delimiters, \cs{or} and \cs{else} are
+% middle delimiters, and \cs{fi} is a right bracket. Other primitives
+% which are used a lot are also given short names. The loop ends by
+% redefining |~| to \cs{def}.
+% \begin{verbatim}
+% *\cr
+% [\ifnum
+% (\ifcase
+% |\or
+% /\else
+% ]\fi
+% N\number
+% @\advance
+% X\expandafter
+% !\global
+% ?\message
+% ~\def
+% \end{verbatim}
+%
+% It is time to allocate counters. Unfortunately, \cs{newcount}
+% is \cs{outer}, so it is unpractical to use. We have set |+1|,
+% \emph{aka.} |\count11| to $213$, and will allocate counters
+% starting from that number upwards. Repeatedly advance |+1|
+% by $1$ and define the next character to be the counter number |+1|,
+% then repeat. As always, the loop is interrupted by making it
+% redefine the looping macro |.| to be a counter. We use the trailing
+% dot to assign it the value $-1$, then assign a couple of counters:
+% starting player, other player, and the initial position:
+% the squares in rows and columns $4$ and $5$ are initially
+% filled in a cross pattern.
+% \begin{verbatim}
+% .#1{@+1 1\countdef#1+1.}.IJKLPQRSTUVWYZ.-1P1T2+44P+55P+45T+54T
+% \end{verbatim}
+% Let us summarize which counters are used where:
+% \begin{itemize}
+% \item [P] is the current player ($1$ for |-| or $2$ for |0|);
+% \item [T] is the other player;
+% \item [Q] is the row number;
+% \item [J] is the column number;
+% \item [S] is the step size in the row direction;
+% \item [K] is the step size in the column direction;
+% \item [R] is the score difference, positive when $0$ is winning;
+% \item [V] is used when computing the value of placing a piece at
+%   the position (|Q|,|J|);
+% \item [W] is the value of the best possible move according to the AI,
+%   also used to end the game if neither player can move;
+% \item [U] is the row number of the best move;
+% \item [L] is the column number of the best move;
+% \item [Y] is a boolean, true ($0$) most of the time,
+%   it has to do with when we flip or not, but I don't
+%   understand it now, help welcome;
+% \item [Z] is a temporary counter, used locally to compute
+%   how much a given cell matters (\emph{i.e.} corners are important),
+%   and used globally as a boolean to indicate whether to flip pieces
+%   or not.
+% \end{itemize}
+%
+% The board is stored in counters |1|\meta{row}\meta{column}.
+% An empty square is has the value $0$, a square for player |-|
+% has value $1$, and player |0| corresponds to the value $2$.
+% The macro |j| retrieves that value, assuming that the row and
+% column numbers are stored as |Q| and |J|, and returns |.|,
+% that is, $-1$, if outside the board. Recall that |[| is \cs{ifnum},
+% |/| is \cs{else}, and |]| is \cs{fi}. When |Q| and |J| are
+% within bounds, the value is retrieved by |^| as
+% |\count1|\meta{row}\meta{column}. Note that |j| and |^| are
+% only safe to use on the left-hand side of an \cs{ifnum} test
+% (because of expansion issues), and that |^| can be used
+% on the left-hand side of an assignment.
+% \begin{verbatim}
+% ~j{[0<Q[9>Q[0<J[9>J^/.]/.]/.]/.]}
+% ~^{+NQNJ}
+% \end{verbatim}
+%
+% We often need to loop over numbers from $1$ to $8$; here is a macro.
+% \begin{verbatim}
+% ~:#1{#11#12#13#14#15#16#17#18}
+% \end{verbatim}
+%
+% The macros to print the board, both to the dvi and to the console.
+% |M| spews its argument as a \cs{message} (|?|), and directly typeset.
+% This is used rather directly to print the first and last lines (|'|),
+% which are simply alignment cells containing each number from $1$ to $8$,
+% with some care given to spaces and new lines.
+% The |_| macro receives a digit and the corresponding capital letter
+% as arguments, and outputs that row of the board. First place the
+% letter on the left of the board, then loop from $1$ to $8$,
+% typesetting and \cs{message}ing a space, |-| or |0|, depending on
+% the value of the relevant count register. Note the two spaces
+% in the definition: the first ends the counter's number, the second
+% is typeset (in plain \TeX{}, active spaces expand to a normal space).
+% \begin{verbatim}
+% ~M#1{?{#1}#1}
+% ~'{M :{&M}&M{*}}
+% ~_#1#2{M#2:{\B#1}&M#2&M{*}}
+% ~\B#1#2{&M{(+#1#2  |-|0]}}
+% \end{verbatim}
+%
+% The input is done by |q|, which queries the user until they give
+% a correct input, so that |Q| and |J| are in the range $[1,8]$.
+% Prompt the user with a small \cs{message}, giving an example
+% of what move he could do (only true at the start, but the hope
+% is that the player will understand what the input format is).
+% The code that follows is similar to \LaTeXe{}'s \cs{@onelevel@sanitize}.
+% We extract the two first characters from the the \cs{meaning}
+% of the user's input (remember, |X| is \cs{expandafter}),
+% as |#2| and |#3| of \cs{D}. Grab the character code of each,
+% relative to the characters |@| (row) or |0| (column).
+% The closing parenthesis is where most of the work is done.
+% It sets |V| to the value of placing a piece in the cell
+% $(|Q|,|J|)$, zero if the move does not flip any of the opponent's
+% pieces, or if the cell is outside the board. After performing
+% that calculation, if |V| is zero, the move was not valid,
+% and we query the user again.
+% \begin{verbatim}
+% ~q{?{Row and column? e.g. E6*}\read.to\EX\D\meaning\E  ;}
+% ~\D#1->#2#3#4;{Q`#2@Q-`@J`#3@J-`0)(V?{Invalid move #2#3.}q]}
+% \end{verbatim}
+%
+% So\ldots{} how do we compute the \enquote{value} of a move?
+% It is automatically invalid if |j| does not return $0$:
+% either the cell is occupied, or it is outside the board.
+% Then for each of the $8$ directions around the cell,
+% we count the number of pieces that are flipped in that
+% direction. The direction is stored as two counters,
+% |S| and |K|, each $\pm 1$ or $0$. We call |,| a first
+% time to test whether flipping should happen in that direction,
+% and, if it is (as indicated by the global value of |Z|),
+% call it again to actually flip. The call to |,| must happen
+% within a group, because it directly changes the row and column
+% numbers |Q| and |J|, following which cell is being queried.
+% \begin{verbatim}
+% ~){V0 (jS1z1z0z.S0z1z.S.z1z0z.]}
+% ~z#1{{K#1Z1{Y1,}(Z,]}}
+% \end{verbatim}
+%
+% The macro |,| is recursive. At each step, move $(|Q|,|J|)$
+% in the direction $(|S|,|K|)$. Then, if that cell (|j|)
+% contains a piece belonging to the other player (|T|),
+% do some stuff |(Y!^P!;2]O| and repeat. What is it that
+% we do? Well, if the condition |Y| is met (I don't remember
+% how that works), we set the current cell to belong to the
+% player, globally, and change the score difference by $2$
+% (see |;|), also globally. Then, we compute with |O| the value
+% corresponding to the cell that we might be flipping (see |O|).
+%
+% Otherwise (|/|), if the cell (|j|) contains a piece from the
+% current player (|P|), it means we have reached the end of a
+% run of the form \meta{initial cell} \meta{opponent's pieces}
+% \meta{own piece}, hence the \meta{opponent's pieces} should
+% count as flipped if we place our piece in the \meta{initial
+%   cell}. Until there, all changes to |V| were local, returning
+% to the old value at the end of the group that |,| is contained
+% in. Since the run in that direction was successful, we escape
+% the value of |V| from the group with |\global V=V|. Under
+% some conditions, we set the boolean |Z| to true, globally (|!Z0|),
+% which triggers a second call to |,| with different setting,
+% and actually flips the opponent's pieces.
+% \begin{verbatim}
+% ~,{@QS@JK[j=T(Y!^P!;2]O,/[j=P!VV(I(Y/!Z0]]]]}
+% \end{verbatim}
+%
+% I moved those |O| and |"| guys a little bit in this explanation,
+% but not in the original implemenation, because it is hard
+% to sync. We assign weights to each of the $64$ cells:
+% \begin{center}
+%   \halign{&\hfil#\hfil\cr
+%     9 & 1 & 6 & 6 & 6 & 6 & 1 & 9 \cr
+%     1 & 1 & 2 & 2 & 2 & 2 & 1 & 9 \cr
+%     6 & 2 & 4 & 4 & 4 & 4 & 2 & 6 \cr
+%     6 & 2 & 4 & 4 & 4 & 4 & 2 & 6 \cr
+%     6 & 2 & 4 & 4 & 4 & 4 & 2 & 6 \cr
+%     6 & 2 & 4 & 4 & 4 & 4 & 2 & 6 \cr
+%     1 & 1 & 2 & 2 & 2 & 2 & 1 & 9 \cr
+%     9 & 1 & 6 & 6 & 6 & 6 & 1 & 9 \cr}
+% \end{center}
+% All weights are positive, so that every move which flips a piece
+% ends up with a positive overall value. The AI would be better if
+% the places next to corners had a negative weight, but I would have
+% too much code to rewrite for that to work. We really have three
+% types of rows and three types of columns. Converting from |Q|
+% or |J| is done by |"|, then we assemble the two as a number
+% in the range $[0,8]$, and use another \cs{ifcase} construction
+% to produce the weights.
+% \begin{verbatim}
+% ~O{Z"Q\multiplyZ3@Z"J@V(Z9|1|6|1|1|2|6|2|4] }
+% ~"#1{(#1|0|1|2|2|2|2|1|0]}
+% \end{verbatim}
+%
+% The counter |R| keeps track of the score difference,
+% and is updated with |;2| (when flipping a piece) or |;1| (when
+% adding a piece). The counter |R| should be \cs{advance}d (|@|)
+% by a positive amount when the current player |P| is player |0|,
+% and a negative amount for player |-|.
+% \begin{verbatim}
+% ~;{@R(P|-]}
+% \end{verbatim}
+%
+% After printing the board, we go through every cell and find the
+% one with the highest value. The macro \cs{A}, does one row, hence
+% |\:\A| does all the rows. Store the argument as the row number |Q|,
+% then loop over columns. After setting the column number |J| to
+% its argument, \cs{C} calls |)|, which as explained above computes
+% the value of placing a piece there, throws away that case if it flips
+% nothing, otherwise also counts the weight of the current cell. Then
+% update the best value |W| and the best row |U| and column |L| if
+% the new |V| is larger than |W|.
+% \begin{verbatim}
+% ~\A#1{Q#1:\C}
+% ~\C#1{J#1)[0<VO[V>WWVUQLJ]]}
+% \end{verbatim}
+%
+% We won't need |~| as \cs{def} anymore, so we reuse it as the main command.
+% \begin{itemize}
+% \item First exchange the players: set |P| equal to |T|, but first expand
+%   the value of |P| after |T| to set that as well.
+% \item Secondly, open an alignment, with a repeating preamble adding a space
+%   at its end. Then message a new-line (we should be using |?| rather than
+%   |M| here, I think) to keep a clean output. Afterwards, print the top line
+%   with |'|, the eight lines of the bulk with |_|, and the bottom line,
+%   which happens to end with |?{*}*|, \emph{i.e.}, ends with \cs{cr}:
+%   we can thus close the alignment, and cause \TeX{} to output the page.
+% \item After printing, it is time to check whether there is a move or not.
+%   We don't want to flip pieces at this stage, hence set the boolean |I|
+%   to false ($1$). And we reset the best value to $0$, unless it was
+%   already $0$ (which means that the previous player had no available
+%   move), in which case we set it to $-1$. Then loop over rows, finding
+%   the best value (see \cs{A}). Reset the boolean |I| to be true.
+% \item If a move was found in the previous step ($|W|>0$), either
+%   use it if the player is the AI, or query the user. The various
+%   booleans are set up in such a way as to do the flipping, so
+%   calling |)| does it. Then also put a player's piece in the current
+%   cell |^|, and increase the score difference by $1$.
+% \item Finally, if neither player could move, declare the game ended,
+%   give the score, and \cs{end} the run. Otherwise, repeat.
+% \end{itemize}
+% Of course, after defining |~|, we call it. Let's play!
+% \begin{verbatim}
+% ~~{
+%   PXTXTNP
+%   \halign{&## *M{*}'_1A_2B_3C_4D_5E_6F_7G_8H'}\vfil\break
+%   I1 W(W./0] :\AI0
+%   [0<W
+%     [1=PQUJL/q]
+%     )
+%     ^P;1
+%   ]
+%   [.=W
+%     ?{(RTie/ Player [0>R-/0] wins by N[0>R-]R].}
+%     X\end
+%   ]
+%   ~
+% }
+% ~
+% \end{verbatim}
+%
+% \end{document}
