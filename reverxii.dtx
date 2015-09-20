@@ -5,23 +5,22 @@
 \endgroup
 \csname if\ifx\tmp\fmtname false\else true\fi\endcsname
   \documentclass{article}
-  \usepackage{shortvrb}
+  \usepackage{shortvrb,verbatim}
+  \csname g@addto@macro\expandafter\endcsname
+    \csname @verbatim\endcsname{\catcode`\%=9\relax}
   \MakeShortVerb|
   \catcode`\%=9
-  \input \jobname.tex
+  \input \jobname.dtx
 \fi
 % \fi
 %
-% \title{\texttt{reverxii.tex}\\
+% \title{\texttt{reverxii}\\
 %   Playing Reversi in \TeX{}}
 % \author{Bruno Le Floch}
 % \date{December 28, 2011}
 % \newcommand{\cs}[1]{\texttt{\char`\\ #1}}
 % \newcommand{\meta}[1]{$\langle \mathit{#1}\rangle$}
 % \newcommand{\enquote}[1]{``#1''}
-% \makeatletter
-% \def\verbatim{\@verbatim\frenchspacing\@vobeyspaces\catcode`\%=9 \@xverbatim}
-% \makeatother
 % \begin{document}
 % \maketitle
 %
@@ -31,33 +30,15 @@
 %   To play, run plain \TeX{}, on the command line, in dvi-mode,
 %   on the file \texttt{reverxii.tex}. In most distributions,
 %   this should mean running \texttt{tex reverxii.tex} in a terminal.
-%   To produce the documentation, run \LaTeX{} on the same file,
-%   with any engine (\emph{e.g.}, \texttt{pdflatex reverxii.tex}).
+%   To typeset the documentation, run \LaTeX{} on \texttt{reverxii.dtx},
+%   with any engine (\emph{e.g.}, \texttt{pdflatex reverxii.dtx}).
 % \end{abstract}
 %
 % \section{The code}
 %
 % Line breaks can be removed, and the stripped down code takes $938$
 % characters.
-% \begin{verbatim}
-\vsize5cm\hsize3cm\newlinechar`*\def~#1{\catcode`#113~}
-~IJKLMNOPQRSTUVWXYZjqz@.[|](/+^'";:?,_)!*{ 13\def~#1#2{\let#1#2~}
-\def+{\count1}+1=2}*\cr[\ifnum(\ifcase|\or/\else]\fiN\number@\advance
-X\expandafter!\global?\message~\def.#1{@+1 1\countdef#1+1.}
-.IJKLPQRSTUVWYZ.-1P1T2+44P+55P+45T+54T
-~j{[0<Q[9>Q[0<J[9>J^/.]/.]/.]/.]}
-~^{+NQNJ}~:#1{#11#12#13#14#15#16#17#18}~M#1{?{#1}#1}
-~_#1#2{M#2:{\B#1}&M#2&M{*}}~\B#1#2{&M{(+#1#2  |-|0]}}
-~q{?{Row and column? e.g. E6*}\read.to\EX\D\meaning\E  ;}
-~\D#1->#2#3#4;{Q`#2@Q-`@J`#3@J-`0)(V?{Invalid move #2#3.}q]}
-~){V0 (jS1z1z0z.S0z1z.S.z1z0z.]}~;{@R(P|-]}~z#1{{K#1Z1{Y1,}(Z,]}}
-~,{@QS@JK[j=T(Y!^P!;2]O,/[j=P!VV(I(Y/!Z0]]]]}~\A#1{Q#1:\C}
-~\C#1{J#1)[0<VO[V>WWVUQLJ]]}~"#1{(#1|0|1|2|2|2|2|1|0]}
-~O{Z"Q\multiplyZ3@Z"J@V(Z9|1|6|1|1|2|6|2|4] }~'{M :{&M}&M{*}}
-~~{PXTXTNP\halign{&## *M{*}'_1A_2B_3C_4D_5E_6F_7G_8H'}\vfil\break
-I1W(W./0] :\AI0 [0<W[1=PQUJL/q])^P;1][.=W?{(RTie/ Player [0>R-/0]
-wins by N[0>R-]R].}X\end]~}~
-% \end{verbatim}
+% {\small \verbatiminput{reverxii.tex}}
 %
 % To play a two-player game, change |1=P| to |0=P| near the end:
 % this changes the computer player from $0$ to $1$, hence disabling it.
@@ -292,12 +273,12 @@ wins by N[0>R-]R].}X\end]~}~
 % \begin{center}
 %   \halign{&\hfil#\hfil\cr
 %     9 & 1 & 6 & 6 & 6 & 6 & 1 & 9 \cr
-%     1 & 1 & 2 & 2 & 2 & 2 & 1 & 9 \cr
+%     1 & 1 & 2 & 2 & 2 & 2 & 1 & 1 \cr
 %     6 & 2 & 4 & 4 & 4 & 4 & 2 & 6 \cr
 %     6 & 2 & 4 & 4 & 4 & 4 & 2 & 6 \cr
 %     6 & 2 & 4 & 4 & 4 & 4 & 2 & 6 \cr
 %     6 & 2 & 4 & 4 & 4 & 4 & 2 & 6 \cr
-%     1 & 1 & 2 & 2 & 2 & 2 & 1 & 9 \cr
+%     1 & 1 & 2 & 2 & 2 & 2 & 1 & 1 \cr
 %     9 & 1 & 6 & 6 & 6 & 6 & 1 & 9 \cr}
 % \end{center}
 % All weights are positive, so that every move which flips a piece
