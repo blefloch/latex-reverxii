@@ -1,9 +1,8 @@
-----------------------------------------------------------------
-reverxii --- Playing Reversi, in the spirit of xii.tex
-E-mail: blflatex@gmail.com
-Released under the LaTeX Project Public License v1.3c or later
-See http://www.latex-project.org/lppl.txt
-----------------------------------------------------------------
+Playing Reversi, in the spirit of xii.tex
+=================================
+* E-mail: blflatex@gmail.com
+* Released under the LaTeX Project Public License v1.3c or later
+  See http://www.latex-project.org/lppl.txt
 
 The file `reverxii.tex` is a 938 character long TeX program which
 lets you play Reversi against your favorite typesetting engine.
