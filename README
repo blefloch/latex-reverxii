@@ -14,7 +14,7 @@ Play by running
 in the command line. This will also produce a record of your
 game as reverxii.dvi. Typeset the documentation by running
 
-    pdflatex reverxii.tex
+    pdflatex reverxii.dtx
 
 This is work in progress, all suggestions/comments/bug reports
 are welcome!
