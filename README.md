@@ -16,3 +16,4 @@ game as `reverxii.dvi`.  Typeset the documentation by running
     pdflatex reverxii.dtx
 
 All suggestions/comments/bug reports are welcome!
+See https://github.com/blefloch/latex-reverxii
