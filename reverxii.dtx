@@ -1,10 +1,13 @@
+{\def\x{plain}\expandafter}\ifx\fmtname\x
+  \errmessage{Use LaTeX for the documentation reverxii.dtx.  Play with reverxii.tex}
+\fi
 \documentclass{article}
 \usepackage{shortvrb,verbatim}
 \MakeShortVerb|
 \title{\texttt{reverxii}\\
   Playing Reversi in \TeX{}}
 \author{Bruno Le Floch}
-\date{September 20, 2015}
+\date{November 6, 2021}
 \newcommand{\cs}[1]{\texttt{\char`\\ #1}}
 \newcommand{\meta}[1]{$\langle \mathit{#1}\rangle$}
 \newcommand{\enquote}[1]{``#1''}
@@ -12,20 +15,23 @@
 \maketitle
 
 \begin{abstract}
-  \texttt{reverxii.tex} is a $938$ character long \TeX{} program
-  which lets you play Reversi against your favorite typestting engine.
-  To play, run plain \TeX{}, on the command line, in dvi-mode,
-  on the file \texttt{reverxii.tex}. In most distributions,
-  this should mean running \texttt{tex reverxii.tex} in a terminal.
-  To typeset the documentation, run \LaTeX{} on \texttt{reverxii.dtx},
-  with any engine (\emph{e.g.}, \texttt{pdflatex reverxii.dtx}).
+  \texttt{reverxii.tex} is a $983$ character long \TeX{} program which
+  lets you play Reversi against your favorite typestting engine.  To
+  play, run plain \TeX{} or \LaTeX{} (either the dvi or the pdf
+  engines), on the command line, on the file \texttt{reverxii.tex}. In
+  most distributions, this can mean running \texttt{tex reverxii.tex} in
+  a terminal.  To typeset the documentation, run \LaTeX{} on
+  \texttt{reverxii.dtx}, with any engine (\emph{e.g.}, \texttt{pdflatex
+    reverxii.dtx}).
 \end{abstract}
 
 \section{The code}
 
-Line breaks can be removed, and the stripped down code takes $938$
+Line breaks can be removed, and the stripped down code takes $983$
 characters.
 {\small \verbatiminput{reverxii.tex}}
+In fact, the first line and |\ifx\>\:1\fi| are only used to support
+\LaTeX{} and can be removed for plain \TeX{}.  This reduces the code down to $938$ characters.
 
 To play a two-player game, change |1=P| to |0=P| near the end:
 this changes the computer player from $0$ to $1$, hence disabling it.
@@ -61,6 +67,15 @@ the least, only twice each.
 
 \subsubsection{On with the code!}
 
+In \LaTeXe{}, detected by comparing the spaces |\>| and~|\:| (only one
+of them is defined in plain \TeX{}), load a document class.
+\begin{verbatim}
+\ifx\>\:\documentclass{report}\fi
+\end{verbatim}
+We do not need \cs{begin}|{document}| because the text is eventually
+typeset inside an \cs{halign} table, which means \cs{everypar} (and its
+usual error) is never called.
+
 First set up the page dimensions. This would not be enough for pdf output.
 \begin{verbatim}
 \vsize5cm
@@ -77,15 +92,16 @@ to \cs{cr}.
 
 Then a first loop to make many characters active. The loop ends when
 reaching the trailing brace group: there we make spaces active, then
-redefine |~| for the next loop. We still have an annoying |13~| in
-the input stream. Introduce a short-hand for count registers whose
-number starts with |1|, then remove |13| by setting |\count11| to
-|213| (this counter is used for allocation later on). The next loop
-is triggered by the |~| which we left.
+redefine |~| for the next loop. We still have an annoying |13~| in the
+input stream. Introduce a short-hand for count registers whose number
+starts with |1| (or in fact |11| in \LaTeX{} given the test
+|\ifx\>\:1\fi|, see later for why we do this).  Then remove |13| by
+setting |\count11| to |213| (this counter is used for allocation later
+on). The next loop is triggered by the |~| which we left.
 \begin{verbatim}
 \def~#1{\catcode`#113~}
 ~IJKLMNOPQRSTUVWXYZjqz@.[|](/+^'";:?,_)!*
-{ 13\def~#1#2{\let#1#2~}\def+{\count1}+1=2}
+{ 13\def~#1#2{\let#1#2~}\def+{\count\ifx\>\:1\fi1}+1=2}
 \end{verbatim}
 
 At this stage, |~| is defined to take two arguments, \cs{let} the
@@ -111,8 +127,19 @@ X\expandafter
 ~\def
 \end{verbatim}
 
-It is time to allocate counters. Unfortunately, \cs{newcount}
-is \cs{outer}, so it is unpractical to use. We have set |+1|,
+It is time to allocate counters. Unfortunately, \cs{newcount} is
+\cs{outer} in plain \TeX{}, so it is unpractical to use.  We have
+defined |+| to be |\count1| in plain and |\count11| in \LaTeX{}.  This
+will eventually let us access a table of $8\times 8$ counters |+11| to
+|+88|, which are thus |\count111| to |\count188| in plain, and
+|\count1111| to |\count1188| in \LaTeX{}.  This is needed because plain
+\TeX{} without e\TeX{} extensions only has $256$ counters, while
+\LaTeX{} \emph{uses} some of these counters already so we must use the
+higher counters provided by the e\TeX{} extensions, always available in
+\LaTeX{}.  The following text explains the plain \TeX{} case; in the
+other case just replace |\count1| by |\count11|.
+
+We have set |+1|,
 \emph{aka.} |\count11| to $213$, and will allocate counters
 starting from that number upwards. Repeatedly advance |+1|
 by $1$ and define the next character to be the counter number |+1|,
@@ -326,7 +353,8 @@ We won't need |~| as \cs{def} anymore, so we reuse it as the main command.
   calling |)| does it. Then also put a player's piece in the current
   cell |^|, and increase the score difference by $1$.
 \item Finally, if neither player could move, declare the game ended,
-  give the score, and \cs{end} the run. Otherwise, repeat.
+  give the score, and \cs{dump} the run (not \cs{end} because we want to
+  support both plain \TeX{} and \LaTeX{}). Otherwise, repeat.
 \end{itemize}
 Of course, after defining |~|, we call it. Let's play!
 \begin{verbatim}
@@ -341,7 +369,7 @@ Of course, after defining |~|, we call it. Let's play!
   ]
   [.=W
     ?{(RTie/ Player [0>R-/0] wins by N[0>R-]R].}
-    X\end
+    X\dump
   ]
   ~
 }
